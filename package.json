@@ -1,0 +1,17 @@
+{
+  "name": "qtelemetry",
+  "version": "0.0.1",
+  "description": "Component for show telemetry",
+  "main": "index.js",
+  "author": "SeBu",
+  "license": "MIT",
+  "scripts": {
+    "build": "mkdir dist;cp ./src/QTelemetry.vue ./dist;buble src/telemetryVuexModule.js > dist/telemetry.js"
+  },
+  "dependencies": {
+    "moment": "^2.18.1",
+    "quasar-framework": "^0.14.3",
+    "vue": "^2.4.2",
+    "vuex": "^2.5.0"
+  }
+}
