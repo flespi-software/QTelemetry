@@ -100,7 +100,7 @@
             },
             filteredTelemetry () {
                 return Object.keys(this.telemetry).reduce((acc, key) => {
-                    if (key.indexOf(this.search) === 0) {
+                    if (key.indexOf(this.search) !== -1) {
                         acc[key] = this.telemetry[key]
                     }
                     return acc
