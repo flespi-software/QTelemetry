@@ -1,4 +1,7 @@
 module.exports = function (Store, Vue) {
+    if (Store.state.telemetry) {
+        return false
+    }
     var state = {
         deviceId: null,
         telemetry: {},

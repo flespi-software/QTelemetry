@@ -38,6 +38,7 @@ In App.vue:
    QTelemetry
  },
  created () {
+   Vue.http.headers.common['Authorization'] = "FlespiToken XXXXXXXXXXXXXXXXXXXXX"
    installTelemetryVuexModule(this.$store, Vue)
  }
 ```
