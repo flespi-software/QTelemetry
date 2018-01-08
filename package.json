@@ -9,9 +9,9 @@
     "build": "mkdir dist;cp ./src/QTelemetry.vue ./dist;buble src/telemetryVuexModule.js > dist/telemetry.js"
   },
   "dependencies": {
-    "moment": "^2.18.1",
-    "quasar-framework": "^0.14.3",
-    "vue": "^2.4.2",
+    "moment": "^2.20.1",
+    "quasar-framework": "^0.14.7",
+    "vue": "^2.5.13",
     "vuex": "^2.5.0"
   }
 }

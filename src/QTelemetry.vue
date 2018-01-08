@@ -146,10 +146,17 @@
         components: { QList, QListHeader, QItem, QItemMain, QItemSide, QItemTile, QTooltip, QIcon, QPopover },
         watch: {
             device (device) {
-                if (device.id && device.id !== this.deviceId) {
-                    this.init(device)
+                if (device.id) {
+                    if (device.id !== this.deviceId) {
+                        this.init(device)
+                        this.history = {}
+                        this.prevTelemetry = {...this.device.telemetry}
+                    }
+                }
+                else {
+                    this.clear()
                     this.history = {}
-                    this.prevTelemetry = {...this.device.telemetry}
+                    this.prevTelemetry = {}
                 }
             },
             telemetry: {

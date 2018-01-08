@@ -9,10 +9,9 @@ module.exports = function (Store, Vue) {
         update: function update (ref) {
             var state = ref.state;
             var commit = ref.commit;
-            var rootState = ref.rootState;
 
             commit('reqStart')
-            return rootState.token && state.deviceId !== -1 ? Vue.http.get(((state.server) + "/registry/devices/" + (state.deviceId)), {
+            return Vue.http.headers.common['Authorization'] && state.deviceId ? Vue.http.get(((state.server) + "/registry/devices/" + (state.deviceId)), {
                 params: {
                     fields: 'telemetry'
                 }
@@ -27,7 +26,7 @@ module.exports = function (Store, Vue) {
 
     var mutations = {
         init: function init (state, device) {
-            Vue.set(state, 'deviceId', device.id || -1)
+            Vue.set(state, 'deviceId', device.id || 0)
             Vue.set(state, 'telemetry', device.telemetry || {})
         },
 
