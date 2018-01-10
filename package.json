@@ -1,6 +1,6 @@
 {
   "name": "qtelemetry",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Component for show telemetry",
   "main": "index.js",
   "author": "SeBu",
@@ -12,6 +12,8 @@
     "moment": "^2.20.1",
     "quasar-framework": "^0.14.7",
     "vue": "^2.5.13",
-    "vuex": "^2.5.0"
+    "vuex": "^2.5.0",
+    "vue-clipboard2": "0.0.8",
+    "mdi": "^2.1.19"
   }
 }
