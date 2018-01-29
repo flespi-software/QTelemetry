@@ -42,14 +42,11 @@
 <script>
     import { QList, QListHeader, QItem, QItemMain, QItemSide, QItemTile, QTooltip, QIcon, QPopover, Toast } from 'quasar-framework'
     import Vue from 'vue'
-    import { createNamespacedHelpers } from 'vuex'
     import moment from 'moment'
     import VueClipboard from 'vue-clipboard2'
     import 'mdi/css/materialdesignicons.min.css'
 
     Vue.use(VueClipboard)
-
-    let { mapState, mapActions, mapMutations } = createNamespacedHelpers('telemetry')
 
     export default {
         name: 'QTelemetry',
@@ -58,13 +55,13 @@
                 type: Object,
                 required: true
             },
-            delay: {
-                type: Number,
-                default: 2000
-            },
             server: {
                 type: String,
                 default: ''
+            },
+            moduleName: {
+                type: String,
+                default: 'telemetry'
             },
             propHistoryFlag: {
                 type: Boolean,
@@ -82,16 +79,15 @@
         },
         data () {
             return {
-                intervalId: 0,
                 prevTelemetry: {...this.device.telemetry},
                 history: {}
             }
         },
         computed: {
-            ...mapState([
-                'deviceId',
-                'telemetry'
-            ]),
+            deviceId () {
+                return this.$store.state[this.moduleName].deviceId
+            },
+            telemetry () { return this.$store.state[this.moduleName].telemetry },
             cls () {
                 let cls = {
                     text: `text-${this.color}`,
@@ -119,8 +115,11 @@
             }
         },
         methods: {
-            ...mapMutations(['init', 'clear', 'setServer']),
-            ...mapActions(['update']),
+            init (payload) { this.$store.commit(`${this.moduleName}/init`, payload) },
+            clear () { this.$store.commit(`${this.moduleName}/clear`) },
+            setServer (payload) { this.$store.commit(`${this.moduleName}/setServer`, payload) },
+            update () { this.$store.dispatch(`${this.moduleName}/update`) },
+            unsubscribe () { this.$store.dispatch(`${this.moduleName}/unsubscribe`) },
             fromNow (ts) {
                 return moment(ts).fromNow()
             },
@@ -174,7 +173,9 @@
             device (device) {
                 if (device.id) {
                     if (device.id !== this.deviceId) {
+                        this.unsubscribe()
                         this.init(device)
+                        this.update()
                         this.history = {}
                         this.prevTelemetry = {...this.device.telemetry}
                     }
@@ -198,12 +199,6 @@
                     }, 1000)
                 }
             },
-            delay (delay) {
-                if (this.intervalId) {
-                    clearInterval(this.intervalId)
-                }
-                this.intervalId = setInterval(this.update, this.delay)
-            },
             server (server) {
                 this.setServer(this.server)
             }
@@ -212,12 +207,8 @@
             this.setServer(this.server)
             this.init(this.device)
             this.update()
-            this.intervalId = setInterval(this.update, this.delay)
         },
         beforeDestroy () {
-            if (this.intervalId) {
-                clearInterval(this.intervalId)
-            }
             this.clear()
         }
     }

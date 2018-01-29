@@ -9,19 +9,21 @@ module.exports = function (Store, Vue) {
     }
 
     const actions = {
-        update ({ state, commit }) {
+        update: async function ({ state, commit }) {
             commit('reqStart')
-            return Vue.http.headers.common['Authorization'] && state.deviceId ? Vue.http.get(`${state.server}/registry/devices/${state.deviceId}`, {
-                params: {
-                    fields: 'telemetry'
+            try {
+                /* init telemetry */
+                if (state.deviceId && !Object.keys(state.telemetry).length) {
+                    let telemetryResp = Vue.connector.http.get(`${state.server}/registry/devices/${state.deviceId}`, { fields: 'telemetry'})
+                    let telemetry = telemetryResp.data
+                    commit('setTelemetry', {telemetry})
                 }
-            }).then((resp) => resp.json())
-                .then((json) => {
-                    commit('setTelemetry', json.result[0])
-                    return json.result[0]
-                })
-                .catch((err) => { commit('reqFailed', err, { root: true }) }) : false
-        }
+                /* subscribe to new device messages */
+                Vue.connector.subscribeMessagesDevices(state.deviceId, (message) => { commit('setTelemetryFromMessage', {message: JSON.parse(message)}) })
+            }
+            catch(error) { commit('reqFailed', error, { root: true }) }
+        },
+        unsubscribe: async function ({ state, commit }) { Vue.connector.unsubscribeMessagesDevices(state.deviceId) }
     }
 
     const mutations = {
@@ -39,12 +41,23 @@ module.exports = function (Store, Vue) {
                 })
             }
         },
+        setTelemetryFromMessage (state, payload) {/* construct telemetry by message from mqtt */
+            if (payload.message) {
+                Object.keys(payload.message).forEach(key => {
+                    if (key === 'device_id' || key === 'device_name') { return false }
+                    if (!state.telemetry[key] || (state.telemetry[key] && state.telemetry[key].value !== payload.message[key])) {
+                        Vue.set(state.telemetry, key, {value: payload.message[key], ts: payload.message.timestamp })
+                    }
+                })
+            }
+        },
         reqStart (state) {
             if (DEV) {
                 console.log('Start Request Telemetry')
             }
         },
         clear (state) {
+            Vue.connector.unsubscribeMessagesDevices(state.deviceId)
             Vue.set(state, 'telemetry', {})
             Vue.set(state, 'deviceId', null)
         },
@@ -53,10 +66,10 @@ module.exports = function (Store, Vue) {
         }
     }
 
-    Store.registerModule('telemetry', {
+    return {
         namespaced: true,
         state,
         actions,
         mutations
-    })
+    }
 }

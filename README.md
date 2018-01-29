@@ -11,7 +11,7 @@ $ npm install git+https://github.com/flespi-software/QTelemetry.git --save
 | Name  | Type | Description  |Default |
 |---|---|---|---|
 | device  | Object  | A device that needs to track telemetry  | *Required* |
-|  delay | Number  | Telemetry update delay  |2000|
+|  moduleName | String  | Telemetry vuex module name |telemetry|
 |  server |  String | Telemetry update server  |''|
 |  propHistoryFlag | Boolean  |  History display flag |false|
 |  search | String  | The search string for telemetry parameters  |''|
@@ -32,14 +32,13 @@ $ npm install git+https://github.com/flespi-software/QTelemetry.git --save
 ## Example
 In App.vue:
 ```javascript
- import { QTelemetry, install as installTelemetryVuexModule } from 'qtelemetry'
+ import { QTelemetry, module as telemetryVuexModule } from 'qtelemetry'
  
  components: {
    QTelemetry
  },
  created () {
-   Vue.http.headers.common['Authorization'] = "FlespiToken XXXXXXXXXXXXXXXXXXXXX"
-   installTelemetryVuexModule(this.$store, Vue)
+   this.$store.registerModule(this.moduleName, telemetryVuexModule(this.$store, Vue))
  }
 ```
 ````javascript
@@ -55,15 +54,16 @@ device = {
 ````
 ````vue
 <q-telemetry
-      :device="device"
-      :propHistoryFlag="true"
-      :delay="3000"
-      :search="filterString"
-      :server="'https://flespi.io'"
+      v-if="Object.keys(devices).length && token"
+      :device="activeDevice"
+      :propHistoryFlag="propHistoryFlag"
+      :moduleName="moduleName"
+      :search="search"
+      :server="server"
       @click:item="clickItemHandler"
       @diff="diffHandler"
-      :inverted="false"
-      :color="'grey-8'"
+      :inverted="invertedTelemetry"
+      :color="telemetryColor"
     >
     </q-telemetry>
 ````
