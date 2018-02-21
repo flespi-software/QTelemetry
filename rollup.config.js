@@ -18,7 +18,7 @@ export default [
     {
         input: './src/telemetryVuexModule.js',
         output: [
-            { file: './dist/telemetry.js', format: 'cjs' }
+            { file: './dist/telemetryVuexModule.js', format: 'cjs' }
         ],
         plugins: plugins
     }

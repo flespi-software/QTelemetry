@@ -1,11 +1,8 @@
 module.exports = function (Store, Vue) {
-    if (Store.state.telemetry) {
-        return false
-    }
     const state = {
         deviceId: null,
         telemetry: {},
-        server: null
+        isLoading: false
     }
 
     const actions = {
@@ -14,9 +11,11 @@ module.exports = function (Store, Vue) {
             try {
                 /* init telemetry */
                 if (state.deviceId && !Object.keys(state.telemetry).length) {
-                    let telemetryResp = Vue.connector.http.get(`${state.server}/registry/devices/${state.deviceId}`, { fields: 'telemetry'})
-                    let telemetry = telemetryResp.data
-                    commit('setTelemetry', {telemetry})
+                    state.isLoading = true
+                    let telemetryResp = await Vue.connector.registry.getDevices(state.deviceId, { fields: 'telemetry'})
+                    let telemetry = telemetryResp.data.result[0]
+                    state.isLoading = false
+                    commit('setTelemetry', telemetry)
                 }
                 /* subscribe to new device messages */
                 Vue.connector.subscribeMessagesDevices(state.deviceId, (message) => { commit('setTelemetryFromMessage', {message: JSON.parse(message)}) })
@@ -60,9 +59,6 @@ module.exports = function (Store, Vue) {
             Vue.connector.unsubscribeMessagesDevices(state.deviceId)
             Vue.set(state, 'telemetry', {})
             Vue.set(state, 'deviceId', null)
-        },
-        setServer (state, server) {
-            Vue.set(state, 'server', server)
         }
     }
 

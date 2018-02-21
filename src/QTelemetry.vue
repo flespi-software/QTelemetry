@@ -1,12 +1,15 @@
 <template>
-    <q-list separator no-border>
-        <q-item v-if="!Object.keys(telemetry).length || !Object.keys(filteredTelemetry).length" :class="[cls.bg]">
+    <q-list separator no-border class="relative-position no-padding" style="min-height: 30vh">
+        <q-item v-if="(!Object.keys(telemetry).length || !Object.keys(filteredTelemetry).length) && !isLoading" :class="[cls.bg]">
             <q-item-main>
                 <q-item-tile label class="ellipsis text-bold text-center" :class="[cls.text]">Telemetry is empty</q-item-tile>
                 <q-item-tile v-if="!Object.keys(telemetry).length" sublabel class="ellipsis text-center" :class="[cls.text]">Init your device</q-item-tile>
                 <q-item-tile v-if="!Object.keys(filteredTelemetry).length && this.search" sublabel class="ellipsis text-center" :class="[cls.text]">Nothing found on your search</q-item-tile>
             </q-item-main>
         </q-item>
+        <div v-if="isLoading" style="text-align: center; margin-top: 10%;">
+            <q-spinner-gears size="70px" color="white" />
+        </div>
         <q-item @click="clickItemHandler(index, key)" v-if="Object.keys(filteredTelemetry).length" v-for="(key, index) in Object.keys(filteredTelemetry)" :key="key" style="transition: all .5s ease-in-out" :class="[!prevTelemetry[key] || prevTelemetry[key].value !== telemetry[key].value ? cls.highlight : cls.bg, cls.bg]">
             <q-item-main>
                 <q-item-tile label class="ellipsis text-bold"  :class="[cls.text]">{{key}}<q-tooltip>{{key}}</q-tooltip></q-item-tile>
@@ -40,8 +43,10 @@
 </template>
 
 <script>
-    import { QList, QListHeader, QItem, QItemMain, QItemSide, QItemTile, QTooltip, QIcon, QPopover, Toast } from 'quasar-framework'
+    import telemetryVuexModule from './telemetryVuexModule'
+    import { QList, QListHeader, QItem, QItemMain, QItemSide, QItemTile, QTooltip, QIcon, QPopover, Toast, QSpinnerGears } from 'quasar-framework'
     import Vue from 'vue'
+    import { mapState } from 'vuex'
     import moment from 'moment'
     import VueClipboard from 'vue-clipboard2'
     import 'mdi/css/materialdesignicons.min.css'
@@ -54,10 +59,6 @@
             device: {
                 type: Object,
                 required: true
-            },
-            server: {
-                type: String,
-                default: ''
             },
             moduleName: {
                 type: String,
@@ -84,10 +85,11 @@
             }
         },
         computed: {
-            deviceId () {
-                return this.$store.state[this.moduleName].deviceId
-            },
-            telemetry () { return this.$store.state[this.moduleName].telemetry },
+            ...mapState({
+                deviceId (state) { return this.moduleName && state[this.moduleName] ? state[this.moduleName].deviceId : null },
+                telemetry (state) { return this.moduleName && state[this.moduleName] ? state[this.moduleName].telemetry : {}},
+                isLoading (state) { return this.moduleName && state[this.moduleName] ? state[this.moduleName].isLoading : false }
+            }),
             cls () {
                 let cls = {
                     text: `text-${this.color}`,
@@ -117,9 +119,8 @@
         methods: {
             init (payload) { this.$store.commit(`${this.moduleName}/init`, payload) },
             clear () { this.$store.commit(`${this.moduleName}/clear`) },
-            setServer (payload) { this.$store.commit(`${this.moduleName}/setServer`, payload) },
-            update () { this.$store.dispatch(`${this.moduleName}/update`) },
-            unsubscribe () { this.$store.dispatch(`${this.moduleName}/unsubscribe`) },
+            update () { return this.$store.dispatch(`${this.moduleName}/update`) },
+            unsubscribe () { return this.$store.dispatch(`${this.moduleName}/unsubscribe`) },
             fromNow (ts) {
                 return moment(ts).fromNow()
             },
@@ -168,7 +169,7 @@
                 })
             }
         },
-        components: { QList, QListHeader, QItem, QItemMain, QItemSide, QItemTile, QTooltip, QIcon, QPopover },
+        components: { QList, QListHeader, QItem, QItemMain, QItemSide, QItemTile, QTooltip, QIcon, QPopover, QSpinnerGears },
         watch: {
             device (device) {
                 if (device.id) {
@@ -198,13 +199,10 @@
                         }
                     }, 1000)
                 }
-            },
-            server (server) {
-                this.setServer(this.server)
             }
         },
         created () {
-            this.setServer(this.server)
+            this.$store.registerModule(this.moduleName, telemetryVuexModule(this.$store, Vue))
             this.init(this.device)
             this.update()
         },
