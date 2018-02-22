@@ -12,7 +12,7 @@ module.exports = function (Store, Vue) {
                 /* init telemetry */
                 if (state.deviceId && !Object.keys(state.telemetry).length) {
                     state.isLoading = true
-                    let telemetryResp = await Vue.connector.registry.getDevices(state.deviceId, { fields: 'telemetry'})
+                    let telemetryResp = await Vue.connector.gw.getDevices(state.deviceId, { fields: 'telemetry'})
                     let telemetry = telemetryResp.data.result[0]
                     state.isLoading = false
                     commit('setTelemetry', telemetry)
