@@ -29,6 +29,29 @@ $ npm install git+https://github.com/flespi-software/QTelemetry.git --save
 - npm version 3+ and [Git](https://git-scm.com/).
 
 ## Example
+Add in quasar.conf.js
+```js
+extras: [
+    'mdi'
+]
+framework: {
+      components: [
+          'QList',
+          'QListHeader',
+          'QItem',
+          'QItemMain',
+          'QItemSide',
+          'QItemTile',
+          'QTooltip',
+          'QIcon',
+          'QPopover',
+          'QSpinnerGears'
+      ],
+      plugins: [
+          'Notify'
+      ]
+}
+```
 In App.vue:
 ```javascript
  import QTelemetry from 'qtelemetry'

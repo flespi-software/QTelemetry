@@ -14,7 +14,7 @@
             <q-item-main>
                 <q-item-tile label class="ellipsis text-bold"  :class="[cls.text]">{{key}}<q-tooltip>{{key}}</q-tooltip></q-item-tile>
                 <q-item-tile sublabel class="ellipsis"  :class="[cls.text]">
-                    <q-icon style="padding-right: 1px" v-if="!!$copyText" name="mdi-content-copy" @click.stop="copyMessageHandler({index, content: telemetry[key].value})"><q-tooltip>copy</q-tooltip></q-icon>
+                    <q-icon style="padding-right: 1px" v-if="!!$copyText" name="mdi-content-copy" @click.stop.native="copyMessageHandler({index, content: telemetry[key].value})"><q-tooltip>copy</q-tooltip></q-icon>
                     <span>
                         {{telemetry[key].value}}
                         <q-tooltip>{{telemetry[key].value}}</q-tooltip>
@@ -44,12 +44,10 @@
 
 <script>
     import telemetryVuexModule from './telemetryVuexModule'
-    import { QList, QListHeader, QItem, QItemMain, QItemSide, QItemTile, QTooltip, QIcon, QPopover, Toast, QSpinnerGears } from 'quasar-framework'
     import Vue from 'vue'
     import { mapState } from 'vuex'
     import moment from 'moment'
     import VueClipboard from 'vue-clipboard2'
-    import 'mdi/css/materialdesignicons.min.css'
 
     Vue.use(VueClipboard)
 
@@ -80,18 +78,24 @@
         },
         data () {
             return {
-                prevTelemetry: {...this.device.telemetry},
+                prevTelemetry: { ...this.device.telemetry },
                 history: {}
             }
         },
         computed: {
             ...mapState({
-                deviceId (state) { return this.moduleName && state[this.moduleName] ? state[this.moduleName].deviceId : null },
-                telemetry (state) { return this.moduleName && state[this.moduleName] ? state[this.moduleName].telemetry : {}},
-                isLoading (state) { return this.moduleName && state[this.moduleName] ? state[this.moduleName].isLoading : false }
+                deviceId (state) {
+                    return this.moduleName && state[this.moduleName] ? state[this.moduleName].deviceId : null
+                },
+                telemetry (state) {
+                    return this.moduleName && state[this.moduleName] ? state[this.moduleName].telemetry : {}
+                },
+                isLoading (state) {
+                    return this.moduleName && state[this.moduleName] ? state[this.moduleName].isLoading : false
+                }
             }),
             cls () {
-                let cls = {
+                const cls = {
                     text: `text-${this.color}`,
                     bg: '',
                     highlight: 'bg-grey-3'
@@ -117,10 +121,18 @@
             }
         },
         methods: {
-            init (payload) { this.$store.commit(`${this.moduleName}/init`, payload) },
-            clear () { this.$store.commit(`${this.moduleName}/clear`) },
-            update () { return this.$store.dispatch(`${this.moduleName}/update`) },
-            unsubscribe () { return this.$store.dispatch(`${this.moduleName}/unsubscribe`) },
+            init (payload) {
+                this.$store.commit(`${this.moduleName}/init`, payload)
+            },
+            clear () {
+                this.$store.commit(`${this.moduleName}/clear`)
+            },
+            update () {
+                return this.$store.dispatch(`${this.moduleName}/update`)
+            },
+            unsubscribe () {
+                return this.$store.dispatch(`${this.moduleName}/unsubscribe`)
+            },
             fromNow (ts) {
                 return moment(ts).fromNow()
             },
@@ -128,7 +140,7 @@
                 return moment(ts).format('L HH:mm:ss')
             },
             clickItemHandler (index, key) {
-                this.$emit('click:item', {deviceId: this.deviceId})
+                this.$emit('click:item', { deviceId: this.deviceId })
             },
             makeHistory (newTelemetry) {
                 Object.keys(newTelemetry).forEach(key => {
@@ -153,23 +165,27 @@
                     return acc
                 }, {})
             },
-            copyMessageHandler ({index, content}) {
-                this.$copyText(JSON.stringify(content)).then(function (e) {
-                    Toast.create.positive({
-                        icon: 'content_copy',
-                        html: `Value copied`,
-                        timeout: 1000
+            copyMessageHandler ({ index, content }) {
+                this.$copyText(JSON.stringify(content))
+                    .then((e) => {
+                        this.$q.notify({
+                            type: 'positive',
+                            icon: 'content_copy',
+                            message: `Value copied`,
+                            timeout: 1000,
+                            position: 'bottom-left'
+                        })
+                    }, (e) => {
+                        this.$q.notify({
+                            type: 'negative',
+                            icon: 'content_copy',
+                            message: `Error coping value`,
+                            timeout: 1000,
+                            position: 'bottom-left'
+                        })
                     })
-                }, function (e) {
-                    Toast.create.negative({
-                        icon: 'content_copy',
-                        html: `Error coping value`,
-                        timeout: 1000
-                    })
-                })
             }
         },
-        components: { QList, QListHeader, QItem, QItemMain, QItemSide, QItemTile, QTooltip, QIcon, QPopover, QSpinnerGears },
         watch: {
             device (device) {
                 if (device.id) {
@@ -178,10 +194,9 @@
                         this.init(device)
                         this.update()
                         this.history = {}
-                        this.prevTelemetry = {...this.device.telemetry}
+                        this.prevTelemetry = { ...this.device.telemetry }
                     }
-                }
-                else {
+                } else {
                     this.clear()
                     this.history = {}
                     this.prevTelemetry = {}
@@ -190,10 +205,10 @@
             telemetry: {
                 deep: true,
                 handler (telemetry) {
-                    let diff = this.getDiff()
-                    Object.keys(diff).length ? this.$emit('diff', diff) : this.$emit('diff', {...telemetry})
+                    const diff = this.getDiff()
+                    Object.keys(diff).length ? this.$emit('diff', diff) : this.$emit('diff', { ...telemetry })
                     setTimeout(() => {
-                        this.prevTelemetry = {...telemetry}
+                        this.prevTelemetry = { ...telemetry }
                         if (this.propHistoryFlag) {
                             this.makeHistory(telemetry)
                         }

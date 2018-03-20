@@ -1,4 +1,4 @@
-module.exports = function (Store, Vue) {
+export default function (Store, Vue) {
     const state = {
         deviceId: null,
         telemetry: {},
@@ -12,17 +12,22 @@ module.exports = function (Store, Vue) {
                 /* init telemetry */
                 if (state.deviceId && !Object.keys(state.telemetry).length) {
                     state.isLoading = true
-                    let telemetryResp = await Vue.connector.gw.getDevices(state.deviceId, { fields: 'telemetry'})
-                    let telemetry = telemetryResp.data.result[0]
+                    const telemetryResp = await Vue.connector.gw.getDevices(state.deviceId, { fields: 'telemetry' })
+                    const telemetry = telemetryResp.data.result[0]
                     state.isLoading = false
                     commit('setTelemetry', telemetry)
                 }
                 /* subscribe to new device messages */
-                Vue.connector.subscribeMessagesDevices(state.deviceId, (message) => { commit('setTelemetryFromMessage', {message: JSON.parse(message)}) })
+                Vue.connector.subscribeMessagesDevices(state.deviceId, (message) => {
+                    commit('setTelemetryFromMessage', { message: JSON.parse(message) })
+                })
+            } catch (error) {
+                commit('reqFailed', error, { root: true })
             }
-            catch(error) { commit('reqFailed', error, { root: true }) }
         },
-        unsubscribe: async function ({ state, commit }) { Vue.connector.unsubscribeMessagesDevices(state.deviceId) }
+        unsubscribe: async function ({ state, commit }) {
+            Vue.connector.unsubscribeMessagesDevices(state.deviceId)
+        }
     }
 
     const mutations = {
@@ -40,12 +45,14 @@ module.exports = function (Store, Vue) {
                 })
             }
         },
-        setTelemetryFromMessage (state, payload) {/* construct telemetry by message from mqtt */
+        setTelemetryFromMessage (state, payload) { /* construct telemetry by message from mqtt */
             if (payload.message) {
                 Object.keys(payload.message).forEach(key => {
-                    if (key === 'device_id' || key === 'device_name') { return false }
+                    if (key === 'device_id' || key === 'device_name') {
+                        return false
+                    }
                     if (!state.telemetry[key] || (state.telemetry[key] && state.telemetry[key].value !== payload.message[key])) {
-                        Vue.set(state.telemetry, key, {value: payload.message[key], ts: payload.message.timestamp })
+                        Vue.set(state.telemetry, key, { value: payload.message[key], ts: payload.message.timestamp })
                     }
                 })
             }
