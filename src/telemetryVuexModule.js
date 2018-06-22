@@ -15,7 +15,7 @@ export default function (Store, Vue) {
                     const telemetryResp = await Vue.connector.gw.getDevicesTelemetry(state.deviceId)
                     let telemetry = telemetryResp.data.result[0]
                     /* remove position object */
-                    if (telemetry.telemetry.position) {
+                    if (telemetry.telemetry && telemetry.telemetry.position) {
                         delete telemetry.telemetry.position
                     }
                     state.isLoading = false
