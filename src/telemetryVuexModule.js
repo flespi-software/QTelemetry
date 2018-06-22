@@ -12,8 +12,12 @@ export default function (Store, Vue) {
                 /* init telemetry */
                 if (state.deviceId && !Object.keys(state.telemetry).length) {
                     state.isLoading = true
-                    const telemetryResp = await Vue.connector.gw.getDevices(state.deviceId, { fields: 'telemetry' })
-                    const telemetry = telemetryResp.data.result[0]
+                    const telemetryResp = await Vue.connector.gw.getDevicesTelemetry(state.deviceId)
+                    let telemetry = telemetryResp.data.result[0]
+                    /* remove position object */
+                    if (telemetry.telemetry.position) {
+                        delete telemetry.telemetry.position
+                    }
                     state.isLoading = false
                     commit('setTelemetry', telemetry)
                 }
