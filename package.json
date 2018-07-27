@@ -1,6 +1,6 @@
 {
   "name": "qtelemetry",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Component for show telemetry",
   "main": "index.js",
   "author": "SeBu",
@@ -11,7 +11,6 @@
   "dependencies": {
     "flespi-io-js": "git+https://github.com/flespi-software/flespi-io-js.git",
     "moment": "^2.22.2",
-    "quasar-cli": "^0.15.20",
     "vue-clipboard2": "0.0.8"
   },
   "devDependencies": {
