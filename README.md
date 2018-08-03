@@ -27,6 +27,7 @@ $ npm install git+https://github.com/flespi-software/QTelemetry.git --save
 
 - [Node.js](https://nodejs.org/en/) (>=6.x)
 - npm version 3+ and [Git](https://git-scm.com/).
+- Register Vue plugin from flespi-io-js with MQTT version protocol 5
 
 ## Example
 Add in quasar.conf.js
@@ -55,7 +56,7 @@ framework: {
 In App.vue:
 ```javascript
  import QTelemetry from 'qtelemetry'
- 
+
  components: {
    QTelemetry
  }

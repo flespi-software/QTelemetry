@@ -84,6 +84,13 @@ typings/
 .idea/**/gradle.xml
 .idea/**/libraries
 
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
 # CMake
 cmake-build-debug/
 

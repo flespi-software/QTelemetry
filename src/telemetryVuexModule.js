@@ -7,30 +7,35 @@ export default function (Store, Vue) {
 
     const actions = {
         update: async function ({ state, commit }) {
-            commit('reqStart')
             try {
                 /* init telemetry */
                 if (state.deviceId && !Object.keys(state.telemetry).length) {
                     state.isLoading = true
-                    const telemetryResp = await Vue.connector.gw.getDevicesTelemetry(state.deviceId)
-                    let telemetry = telemetryResp.data.result[0]
-                    /* remove position object */
-                    if (telemetry.telemetry && telemetry.telemetry.position) {
-                        delete telemetry.telemetry.position
-                    }
+                    /* subscribe to new device telemetry */
+                    let grants = await Vue.connector.socket.subscribe({
+                        name: `flespi/state/gw/devices/${state.deviceId}/telemetry/+`,
+                        handler (message, topic, packet) {
+                            let name = topic.split('/').reverse()[0]
+                            if (name === 'position') { return false }
+                            let value = message.toString(),
+                                ts = packet.properties && packet.properties.userProperties && packet.properties.userProperties.timestamp,
+                                telemetry = {
+                                    [name]: {
+                                        value,
+                                        ts
+                                    }
+                                }
+                            commit('setParameter', telemetry)
+                        }
+                    })
                     state.isLoading = false
-                    commit('setTelemetry', telemetry)
                 }
-                /* subscribe to new device messages */
-                Vue.connector.subscribeMessagesDevices(state.deviceId, (message) => {
-                    commit('setTelemetryFromMessage', { message: JSON.parse(message) })
-                })
             } catch (error) {
                 commit('reqFailed', error, { root: true })
             }
         },
         unsubscribe: async function ({ state, commit }) {
-            Vue.connector.unsubscribeMessagesDevices(state.deviceId)
+            Vue.connector.socket.unsubscribe(`flespi/state/gw/devices/${state.deviceId}/telemetry/+`)
         }
     }
 
@@ -40,34 +45,15 @@ export default function (Store, Vue) {
             Vue.set(state, 'telemetry', device.telemetry || {})
         },
 
-        setTelemetry (state, payload) {
-            if (payload.telemetry) {
-                Object.keys(payload.telemetry).forEach(key => {
-                    if (!state.telemetry[key] || (state.telemetry[key] && state.telemetry[key].value !== payload.telemetry[key].value)) {
-                        Vue.set(state.telemetry, key, payload.telemetry[key])
-                    }
-                })
-            }
-        },
-        setTelemetryFromMessage (state, payload) { /* construct telemetry by message from mqtt */
-            if (payload.message) {
-                Object.keys(payload.message).forEach(key => {
-                    if (key === 'device_id' || key === 'device_name') {
-                        return false
-                    }
-                    if (!state.telemetry[key] || (state.telemetry[key] && state.telemetry[key].value !== payload.message[key])) {
-                        Vue.set(state.telemetry, key, { value: payload.message[key], ts: payload.message.timestamp })
-                    }
-                })
-            }
-        },
-        reqStart (state) {
-            if (DEV) {
-                console.log('Start Request Telemetry')
-            }
+        setParameter (state, payload) {
+            Object.keys(payload).forEach(key => {
+                if (!state.telemetry[key] || (state.telemetry[key] && state.telemetry[key].ts <= payload[key].ts)) {
+                    Vue.set(state.telemetry, key, payload[key])
+                }
+            })
         },
         clear (state) {
-            Vue.connector.unsubscribeMessagesDevices(state.deviceId)
+            Vue.connector.socket.unsubscribe(`flespi/state/gw/devices/${state.deviceId}/telemetry/+`)
             Vue.set(state, 'telemetry', {})
             Vue.set(state, 'deviceId', null)
         }

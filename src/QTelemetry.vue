@@ -10,11 +10,11 @@
         <div v-if="isLoading" style="text-align: center; margin-top: 10%;">
             <q-spinner-gears size="70px" color="white" />
         </div>
-        <q-item @click="clickItemHandler(index, key)" v-if="Object.keys(filteredTelemetry).length" v-for="(key, index) in Object.keys(filteredTelemetry)" :key="key" style="transition: all .5s ease-in-out" :class="[!prevTelemetry[key] || prevTelemetry[key].value !== telemetry[key].value ? cls.highlight : cls.bg, cls.bg]">
+        <q-item @click="clickItemHandler(index, key)" v-if="Object.keys(filteredTelemetry).length && !isLoading" v-for="(key, index) in Object.keys(filteredTelemetry)" :key="key" style="transition: all .5s ease-in-out" :class="[!prevTelemetry[key] || prevTelemetry[key].value !== telemetry[key].value ? cls.highlight : cls.bg]">
             <q-item-main>
                 <q-item-tile label class="ellipsis text-bold"  :class="[cls.text]">{{key}}<q-tooltip>{{key}}</q-tooltip></q-item-tile>
                 <q-item-tile sublabel class="ellipsis"  :class="[cls.text]">
-                    <q-icon style="padding-right: 1px" v-if="!!$copyText" name="mdi-content-copy" @click.stop.native="copyMessageHandler({index, content: telemetry[key].value})"><q-tooltip>copy</q-tooltip></q-icon>
+                    <q-icon style="padding-right: 1px; cursor: pointer;" v-if="!!$copyText" name="mdi-content-copy" @click.stop.native="copyMessageHandler({index, content: telemetry[key].value})"><q-tooltip>copy</q-tooltip></q-icon>
                     <span>
                         {{telemetry[key].value}}
                         <q-tooltip>{{telemetry[key].value}}</q-tooltip>
@@ -107,7 +107,7 @@
                         cls.text = 'text-white'
                     }
                     cls.bg = `bg-dark`
-                    cls.highlight = `bg-grey-9`
+                    cls.highlight = `bg-grey-7`
                 }
                 return cls
             },

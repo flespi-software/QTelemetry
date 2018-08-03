@@ -1,12 +1,12 @@
 {
   "name": "qtelemetry",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Component for show telemetry",
   "main": "index.js",
   "author": "SeBu",
   "license": "MIT",
   "scripts": {
-    "build": "mkdir dist;cp ./src/QTelemetry.vue ./dist;rollup -c;"
+    "build": "rm -rf dist && mkdir dist;cp ./src/QTelemetry.vue ./dist;rollup -c;"
   },
   "dependencies": {
     "flespi-io-js": "git+https://github.com/flespi-software/flespi-io-js.git",
