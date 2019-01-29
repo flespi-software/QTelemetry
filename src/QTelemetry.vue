@@ -10,35 +10,37 @@
         <div v-if="isLoading" style="text-align: center; margin-top: 10%;">
             <q-spinner-gears size="70px" color="white" />
         </div>
-        <q-item @click="clickItemHandler(index, key)" v-if="Object.keys(filteredTelemetry).length && !isLoading" v-for="(key, index) in Object.keys(filteredTelemetry)" :key="key" style="transition: all .5s ease-in-out" :class="[!prevTelemetry[key] || prevTelemetry[key].value !== telemetry[key].value ? cls.highlight : cls.bg]">
-            <q-item-main>
-                <q-item-tile label class="ellipsis text-bold"  :class="[cls.text]">{{key}}<q-tooltip>{{key}}</q-tooltip></q-item-tile>
-                <q-item-tile sublabel class="ellipsis"  :class="[cls.text]">
-                    <q-icon style="padding-right: 1px; cursor: pointer;" v-if="!!$copyText" name="mdi-content-copy" @click.stop.native="copyMessageHandler({index, content: telemetry[key].value})"><q-tooltip>copy</q-tooltip></q-icon>
-                    <span>
-                        {{telemetry[key].value}}
-                        <q-tooltip>{{telemetry[key].value}}</q-tooltip>
-                    </span>
-                </q-item-tile>
-            </q-item-main>
-            <q-item-side right><small  :class="[cls.text]">{{fromNow(telemetry[key].ts * 1000)}}</small><q-tooltip><small>{{getTime(telemetry[key].ts * 1000)}}</small></q-tooltip></q-item-side>
-            <q-popover class="shadow-1" ref="popovers">
-                <q-list v-if="propHistoryFlag && history[key] && history[key].length" separator no-border>
-                    <q-item>
-                        <q-item-side left><q-icon size="1.5rem" name="history"/></q-item-side>
-                        <q-item-main>
-                            <q-item-tile class="ellipsis">History</q-item-tile>
-                        </q-item-main>
-                    </q-item>
-                    <q-item v-for="(obj, index) in history[key]" :key="index">
-                        <q-item-main>
-                            <q-item-tile label class="ellipsis">{{obj.value}}</q-item-tile>
-                        </q-item-main>
-                        <q-item-side right><small>{{getTime(obj.ts * 1000)}}</small></q-item-side>
-                    </q-item>
-                </q-list>
-            </q-popover>
-        </q-item>
+        <template v-if="Object.keys(filteredTelemetry).length && !isLoading">
+            <q-item @click="clickItemHandler(index, key)" v-for="(key, index) in Object.keys(filteredTelemetry)" :key="key" style="transition: all .5s ease-in-out" :class="[!prevTelemetry[key] || prevTelemetry[key].value !== telemetry[key].value ? cls.highlight : cls.bg]">
+                <q-item-main>
+                    <q-item-tile label class="ellipsis text-bold"  :class="[cls.text]">{{key}}<q-tooltip>{{key}}</q-tooltip></q-item-tile>
+                    <q-item-tile sublabel class="ellipsis"  :class="[cls.text]">
+                        <q-icon style="padding-right: 1px; cursor: pointer;" v-if="!!$copyText" name="mdi-content-copy" @click.stop.native="copyMessageHandler({index, content: telemetry[key].value})"><q-tooltip>copy</q-tooltip></q-icon>
+                        <span>
+                            {{telemetry[key].value}}
+                            <q-tooltip>{{telemetry[key].value}}</q-tooltip>
+                        </span>
+                    </q-item-tile>
+                </q-item-main>
+                <q-item-side right><small  :class="[cls.text]">{{fromNow(telemetry[key].ts * 1000)}}</small><q-tooltip><small>{{getTime(telemetry[key].ts * 1000)}}</small></q-tooltip></q-item-side>
+                <q-popover class="shadow-1" ref="popovers">
+                    <q-list v-if="propHistoryFlag && history[key] && history[key].length" separator no-border>
+                        <q-item>
+                            <q-item-side left><q-icon size="1.5rem" name="history"/></q-item-side>
+                            <q-item-main>
+                                <q-item-tile class="ellipsis">History</q-item-tile>
+                            </q-item-main>
+                        </q-item>
+                        <q-item v-for="(obj, index) in history[key]" :key="index">
+                            <q-item-main>
+                                <q-item-tile label class="ellipsis">{{obj.value}}</q-item-tile>
+                            </q-item-main>
+                            <q-item-side right><small>{{getTime(obj.ts * 1000)}}</small></q-item-side>
+                        </q-item>
+                    </q-list>
+                </q-popover>
+            </q-item>
+        </template>
     </q-list>
 </template>
 
