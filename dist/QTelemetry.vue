@@ -256,10 +256,12 @@ export default {
     device(device) {
       if (device.id) {
         if (device.id !== this.deviceId) {
+          this.filteredTelemetry = {}
           this.unsubscribe()
           this.init(device)
           this.update()
           this.history = {}
+          clearTimeout(this.prevTelemetryTimeout)
           this.prevTelemetry = {
             ...this.device.telemetry
           }
