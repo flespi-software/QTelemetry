@@ -1,0 +1,49 @@
+{
+  "name": "qtelemetry",
+  "version": "0.2.0",
+  "description": "Component for show telemetry",
+  "productName": "QTelemetry",
+  "cordovaId": "org.cordova.quasar.app",
+  "capacitorId": "",
+  "author": "Sergey Buntsevich <scarry92@yandex.ru>",
+  "private": true,
+  "scripts": {
+    "dev": "quasar dev -m pwa",
+    "build": "quasar build -m spa",
+    "build_lib": "rm -rf dist && rollup -c;",
+    "dev_local": "node ./build.js \"dev -m spa\" \"local\"",
+    "deploy": "rm -rf dist && npm run build && rm -rf deploy && mkdir deploy && cp -R dist/spa/* misc LICENSE package.json deploy && cp README.md deploy/README.md && node_modules/git-directory-deploy/bin/git-directory-deploy.sh -ddeploy -bgh-pages -rhttps://git.gurtam.net/flespi/frontend/QTelemetry.git && rm -rf deploy && git push github gh-pages"
+  },
+  "dependencies": {
+    "flespi-io-js": "git+https://github.com/flespi-software/flespi-io-js.git",
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0",
+    "vue-clipboard2": "^0.2.1",
+    "vue-virtual-scroll-list": "^1.4.2",
+    "@quasar/extras": "^1.0.0",
+    "quasar": "^1.0.0"
+  },
+  "devDependencies": {
+    "@quasar/app": "^1.0.0",
+    "@vue/eslint-config-standard": "^4.0.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.10.0",
+    "eslint-loader": "^2.1.1",
+    "eslint-plugin-vue": "^5.0.0",
+    "shelljs": "^0.8.2",
+    "git-directory-deploy": "^1.5.1",
+    "rollup": "^1.27.3",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-uglify": "^6.0.3"
+  },
+  "engines": {
+    "node": ">= 8.9.0",
+    "npm": ">= 5.6.0",
+    "yarn": ">= 1.6.0"
+  },
+  "browserslist": [
+    "last 1 version, not dead, ie >= 11"
+  ]
+}
