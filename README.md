@@ -37,16 +37,14 @@ extras: [
 ]
 framework: {
       components: [
-          'QList',
-          'QListHeader',
-          'QItem',
-          'QItemMain',
-          'QItemSide',
-          'QItemTile',
-          'QTooltip',
           'QIcon',
-          'QPopover',
-          'QSpinnerGears'
+          'QList',
+          'QItem',
+          'QItemSection',
+          'QItemLabel',
+          'QSpinnerGears',
+          'QTooltip',
+          'QMenu'
       ],
       plugins: [
           'Notify'
@@ -55,10 +53,13 @@ framework: {
 ```
 In App.vue:
 ```javascript
- import QTelemetry from 'qtelemetry'
+ import { QTelemetry, telemetryVuexModule} from 'qtelemetry'
 
  components: {
    QTelemetry
+ },
+ created () {
+   this.$store.registerModule(this.moduleName, telemetryVuexModule(this.$store, Vue))
  }
 ```
 ````javascript
@@ -88,7 +89,25 @@ device = {
 ````
 
 #Demo
-Coming soon
+Check it out [live](https://flespi-software.github.io/QTelemetry)!
+
+![Screenshot](/misc/screenshot.png?raw=true "Telemetry Viewer!")
+
+## Build Setup
+
+``` bash
+# clone the repo
+$ git clone https://github.com/flespi-software/QTelemetry.git telemetryviewer
+
+# go into app's directory and install dependencies
+$ cd telemetryviewer
+$ npm install
+
+# serve with hot reload at localhost:7006
+$ npm run dev
+
+# build for production with minification
+$ npm run build
 
 ## License
 [MIT](https://github.com/flespi-software/QTelemetry/blob/master/LICENSE) license.

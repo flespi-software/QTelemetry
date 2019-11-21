@@ -1,13 +1,11 @@
 <template>
   <q-list separator no-border class="relative-position no-padding" style="min-height: 30vh">
     <q-item v-if="(!telemetryKeys.length || !filteredTelemetryKeys.length) && !isLoading" :class="[cls.bg]">
-      <q-item-main>
-        <q-item-tile label class="ellipsis text-bold text-center" :class="[cls.text]">Telemetry is empty</q-item-tile>
-        <q-item-tile v-if="!telemetryKeys.length" sublabel class="ellipsis text-center" :class="[cls.text]">Init your
-          device</q-item-tile>
-        <q-item-tile v-if="!filteredTelemetryKeys.length && this.search" sublabel class="ellipsis text-center"
-          :class="[cls.text]">Nothing found on your search</q-item-tile>
-      </q-item-main>
+      <q-item-section>
+        <q-item-label class="ellipsis text-bold text-center" :class="[cls.text]">Telemetry is empty</q-item-label>
+        <q-item-label v-if="!telemetryKeys.length" class="ellipsis text-center" :class="[cls.text]">Init your device</q-item-label>
+        <q-item-label v-if="!filteredTelemetryKeys.length && this.search" class="ellipsis text-center" :class="[cls.text]">Nothing found on your search</q-item-label>
+      </q-item-section>
     </q-item>
     <div v-if="isLoading" style="text-align: center; margin-top: 10%;">
       <q-spinner-gears size="70px" color="white" />
@@ -25,10 +23,12 @@
         style="transition: all .5s ease-in-out"
         :class="[!prevTelemetry[key] || prevTelemetry[key].value !== telemetry[key].value ? cls.highlight : cls.bg]"
       >
-        <q-item-main>
-          <q-item-tile label class="ellipsis text-bold" :class="[cls.text]">{{key}}<q-tooltip>{{key}}</q-tooltip>
-          </q-item-tile>
-          <q-item-tile sublabel class="ellipsis" :class="[cls.text]">
+        <q-item-section>
+          <q-item-label class="ellipsis text-bold" :class="[cls.text]">
+            {{key}}
+            <q-tooltip>{{key}}</q-tooltip>
+          </q-item-label>
+          <q-item-label class="ellipsis" :class="[cls.text]">
             <q-icon style="padding-right: 1px; cursor: pointer;" v-if="!!$copyText" name="mdi-content-copy"
               @click.stop.native="copyMessageHandler({index, content: telemetry[key].value})">
               <q-tooltip>copy</q-tooltip>
@@ -37,36 +37,35 @@
               {{telemetry[key].value}}
               <q-tooltip>{{telemetry[key].value}}</q-tooltip>
             </span>
-          </q-item-tile>
-        </q-item-main>
-        <q-item-side right><small :class="[cls.text]">{{fromNow(telemetry[key].ts * 1000)}}</small>
+          </q-item-label>
+        </q-item-section>
+        <q-item-section side right><small :class="[cls.text]">{{fromNow(telemetry[key].ts * 1000)}}</small>
           <q-tooltip><small>{{getTime(telemetry[key].ts * 1000)}}</small></q-tooltip>
-        </q-item-side>
-        <q-popover class="shadow-1" ref="popovers">
+        </q-item-section>
+        <q-menu class="shadow-1" ref="popovers">
           <q-list v-if="propHistoryFlag && history[key] && history[key].length" separator no-border>
             <q-item>
-              <q-item-side left>
+              <q-item-section avatar>
                 <q-icon size="1.5rem" name="history" />
-              </q-item-side>
-              <q-item-main>
-                <q-item-tile class="ellipsis">History</q-item-tile>
-              </q-item-main>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="ellipsis">History</q-item-label>
+              </q-item-section>
             </q-item>
             <q-item v-for="(obj, index) in history[key]" :key="index">
-              <q-item-main>
-                <q-item-tile label class="ellipsis">{{obj.value}}</q-item-tile>
-              </q-item-main>
-              <q-item-side right><small>{{getTime(obj.ts * 1000)}}</small></q-item-side>
+              <q-item-section>
+                <q-item-label class="ellipsis">{{obj.value}}</q-item-label>
+              </q-item-section>
+              <q-item-section side><small>{{getTime(obj.ts * 1000)}}</small></q-item-section>
             </q-item>
           </q-list>
-        </q-popover>
+        </q-menu>
       </q-item>
     </VirtualList>
   </q-list>
 </template>
 
 <script>
-import telemetryVuexModule from './telemetryVuexModule'
 import Vue from 'vue'
 import {
   mapState
@@ -103,7 +102,7 @@ export default {
     },
     inverted: Boolean
   },
-  data() {
+  data () {
     return {
       prevTelemetry: {
         ...this.device.telemetry
@@ -115,17 +114,17 @@ export default {
   },
   computed: {
     ...mapState({
-      deviceId(state) {
+      deviceId (state) {
         return this.moduleName && state[this.moduleName] ? state[this.moduleName].deviceId : null
       },
-      telemetry(state) {
+      telemetry (state) {
         return this.moduleName && state[this.moduleName] ? state[this.moduleName].telemetry : {}
       },
-      isLoading(state) {
+      isLoading (state) {
         return this.moduleName && state[this.moduleName] ? state[this.moduleName].isLoading : false
       }
     }),
-    cls() {
+    cls () {
       const cls = {
         text: `text-${this.color}`,
         bg: '',
@@ -137,43 +136,43 @@ export default {
         } else {
           cls.text = 'text-white'
         }
-        cls.bg = `bg-dark`
+        cls.bg = `bg-grey-9`
         cls.highlight = `bg-grey-7`
       }
       return cls
     },
-    telemetryKeys() {
+    telemetryKeys () {
       return Object.keys(this.telemetry)
     },
-    filteredTelemetryKeys() {
+    filteredTelemetryKeys () {
       return Object.keys(this.filteredTelemetry)
     }
   },
   methods: {
-    init(payload) {
+    init (payload) {
       this.$store.commit(`${this.moduleName}/init`, payload)
     },
-    clear() {
+    clear () {
       this.$store.commit(`${this.moduleName}/clear`)
     },
-    update() {
+    update () {
       return this.$store.dispatch(`${this.moduleName}/update`)
     },
-    unsubscribe() {
+    unsubscribe () {
       return this.$store.dispatch(`${this.moduleName}/unsubscribe`)
     },
-    fromNow(ts) {
+    fromNow (ts) {
       return moment(ts).fromNow()
     },
-    getTime(ts) {
+    getTime (ts) {
       return moment(ts).format('L HH:mm:ss')
     },
-    clickItemHandler(index, key) {
+    clickItemHandler (index, key) {
       this.$emit('click:item', {
         deviceId: this.deviceId
       })
     },
-    makeHistory(newTelemetry) {
+    makeHistory (newTelemetry) {
       Object.keys(newTelemetry).forEach(key => {
         if (!this.history[key]) {
           this.history[key] = [newTelemetry[key]]
@@ -188,7 +187,7 @@ export default {
         }
       })
     },
-    getDiff() {
+    getDiff () {
       return Object.keys(this.telemetry).reduce((acc, key) => {
         if (!this.prevTelemetry[key] || this.prevTelemetry[key].value !== this.telemetry[key].value) {
           acc[key] = this.telemetry[key]
@@ -196,7 +195,7 @@ export default {
         return acc
       }, {})
     },
-    copyMessageHandler({
+    copyMessageHandler ({
       index,
       content
     }) {
@@ -219,7 +218,7 @@ export default {
           })
         })
     },
-    setFilteredTelemetry(telemetry) {
+    setFilteredTelemetry (telemetry) {
       let filteredTelemetry = this.filteredTelemetry
       this.telemetryKeys.forEach((key) => {
         if (key.indexOf(this.search) !== -1) {
@@ -229,7 +228,7 @@ export default {
         }
       })
     },
-    telemetryDiffHistoryProcessing(telemetry) {
+    telemetryDiffHistoryProcessing (telemetry) {
       const diff = this.getDiff()
       Object.keys(diff).length ? this.$emit('diff', diff) : this.$emit('diff', {
         ...telemetry
@@ -247,13 +246,13 @@ export default {
         this.prevTelemetryTimeout = 0
       }, 1000)
     },
-    telemetryProcessing(telemetry) {
+    telemetryProcessing (telemetry) {
       this.setFilteredTelemetry(telemetry)
       this.telemetryDiffHistoryProcessing(telemetry)
     }
   },
   watch: {
-    device(device) {
+    device (device) {
       if (device.id) {
         if (device.id !== this.deviceId) {
           this.filteredTelemetry = {}
@@ -274,23 +273,22 @@ export default {
     },
     telemetry: {
       deep: true,
-      handler(telemetry) {
+      handler (telemetry) {
         this.debouncedTelemetryProcessing(telemetry)
       }
     },
-    search() {
+    search () {
       this.setFilteredTelemetry(this.telemetry)
     }
   },
-  created() {
+  created () {
     this.debouncedTelemetryProcessing = debounce(this.telemetryProcessing, 500, {
       trailing: true
     })
-    this.$store.registerModule(this.moduleName, telemetryVuexModule(this.$store, Vue))
     this.init(this.device)
     this.update()
   },
-  beforeDestroy() {
+  beforeDestroy () {
     this.clear()
   },
   components: {
@@ -298,6 +296,3 @@ export default {
   }
 }
 </script>
-
-<style>
-</style>

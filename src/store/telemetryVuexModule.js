@@ -37,9 +37,9 @@ export default function (Store, Vue) {
               messages = []
             }
           /* subscribe to new device telemetry */
-          let grants = await Vue.connector.socket.subscribe({
+          await Vue.connector.socket.subscribe({
             name: `flespi/state/gw/devices/${state.deviceId}/telemetry/+`,
-            handler(message, topic, packet) {
+            handler (message, topic, packet) {
               messages.push(packet)
             }
           })
@@ -62,19 +62,19 @@ export default function (Store, Vue) {
   }
 
   const mutations = {
-    init(state, device) {
+    init (state, device) {
       Vue.set(state, 'deviceId', device.id || 0)
       Vue.set(state, 'telemetry', device.telemetry || {})
     },
 
-    setParameter(state, payload) {
+    setParameter (state, payload) {
       Object.keys(payload).forEach(key => {
         if (!state.telemetry[key] || (state.telemetry[key] && state.telemetry[key].ts <= payload[key].ts)) {
           Vue.set(state.telemetry, key, payload[key])
         }
       })
     },
-    clear(state) {
+    clear (state) {
       Vue.connector.socket.unsubscribe(`flespi/state/gw/devices/${state.deviceId}/telemetry/+`)
       Vue.set(state, 'telemetry', {})
       Vue.set(state, 'deviceId', null)
