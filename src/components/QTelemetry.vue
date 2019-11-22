@@ -202,7 +202,7 @@ export default {
       this.$copyText(JSON.stringify(content))
         .then((e) => {
           this.$q.notify({
-            type: 'positive',
+            color: 'positive',
             icon: 'content_copy',
             message: `Value copied`,
             timeout: 1000,
@@ -210,7 +210,7 @@ export default {
           })
         }, (e) => {
           this.$q.notify({
-            type: 'negative',
+            color: 'negative',
             icon: 'content_copy',
             message: `Error coping value`,
             timeout: 1000,
