@@ -29,7 +29,7 @@
             <q-tooltip>{{key}}</q-tooltip>
           </q-item-label>
           <q-item-label class="ellipsis" :class="[cls.text]">
-            <q-icon style="padding-right: 1px; cursor: pointer;" v-if="!!$copyText" name="mdi-content-copy"
+            <q-icon style="padding-right: 1px; cursor: pointer;" name="mdi-content-copy"
               @click.stop.native="copyMessageHandler({index, content: telemetry[key].value})">
               <q-tooltip>copy</q-tooltip>
             </q-icon>
@@ -66,16 +66,13 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import {
   mapState
 } from 'vuex'
 import moment from 'moment'
-import VueClipboard from 'vue-clipboard2'
+import { copyToClipboard } from 'quasar'
 import debounce from 'lodash/debounce'
 import VirtualList from 'vue-virtual-scroll-list'
-
-Vue.use(VueClipboard)
 
 export default {
   name: 'QTelemetry',
@@ -199,7 +196,7 @@ export default {
       index,
       content
     }) {
-      this.$copyText(JSON.stringify(content))
+      copyToClipboard(JSON.stringify(content))
         .then((e) => {
           this.$q.notify({
             color: 'positive',
