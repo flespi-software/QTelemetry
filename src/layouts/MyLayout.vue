@@ -37,34 +37,32 @@
         </q-select>
       </q-expansion-item>
       <q-expansion-item group="left" class="text-white" icon="settings" label="Settings">
-        <q-input type="text" label="Server" v-model="server" dark color="white" />
-        <q-checkbox dark v-model="propHistoryFlag" label="History" :color="propHistoryFlag ? 'white' : 'grey'" class="text-grey uppercase" style="padding: 15px 0 0"/>
         <div class="row">
-          <div class="col-6 uppercase" style="padding: 26px 0 0;">
-            <q-checkbox dark v-model="invertedTelemetry" label="Inverted" :color="invertedTelemetry ? 'white' : 'grey'" class="text-grey"/>
-          </div>
-          <div class="col-6">
-            <q-select outlined dark color="white" :value="telemetryColor" @input="model => telemetryColor = model.value" :options="telemetryColorOptions">
-              <q-icon slot="prepend" name="color_lens" />
-            </q-select>
-          </div>
+          <q-input type="text" label="Host" v-model="server" dark color="white" class="full-width"/>
+          <q-checkbox dark v-model="propHistoryFlag" label="History" class="text-grey uppercase full-width"/>
+          <q-checkbox dark v-model="invertedTelemetry" label="Inverted" class="text-grey full-width"/>
+          <q-select class="full-width" map-options emit-value outlined dark color="white" :value="telemetryColor" @input="model => telemetryColor = model.value" :options="telemetryColorOptions">
+            <q-icon slot="prepend" name="color_lens" />
+          </q-select>
         </div>
       </q-expansion-item>
     </q-drawer>
-    <q-page-container :content-class="{'bg-grey-9': invertedTelemetry}" :content-style="{transition: 'all .5s ease-in-out'}">
-      <q-telemetry
-        v-if="Object.keys(devices).length && token && !socketOffline"
-        :device="activeDevice"
-        :propHistoryFlag="propHistoryFlag"
-        :moduleName="moduleName"
-        :search="search"
-        :server="server"
-        @click:item="clickItemHandler"
-        @diff="diffHandler"
-        :inverted="invertedTelemetry"
-        :color="telemetryColor"
-      >
-      </q-telemetry>
+    <q-page-container>
+      <q-page v-if="Object.keys(devices).length && token && !socketOffline">
+        <q-telemetry
+          :class="{'bg-grey-9': invertedTelemetry}" class="absolute-top-left absolute-bottom-right"
+          :style="{transition: 'all .5s ease-in-out'}"
+          :device="activeDevice"
+          :propHistoryFlag="propHistoryFlag"
+          :moduleName="moduleName"
+          :search="search"
+          :server="server"
+          @click:item="clickItemHandler"
+          @diff="diffHandler"
+          :inverted="invertedTelemetry"
+          :color="telemetryColor"
+        />
+      </q-page>
       <div v-else class="text-center text-uppercase text-grey-7" style="font-size: 3rem; padding-top: 30px">
         <q-btn @click="openWindow(`${$flespiServer}/login/#/providers`)" icon="mdi-account-circle" color="red-7" rounded label="login / register" size="lg"/>
       </div>

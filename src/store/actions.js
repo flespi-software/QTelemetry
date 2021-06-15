@@ -15,7 +15,7 @@ async function getDevices ({ state, commit }, server) {
 
 async function checkConnection ({ state, commit }) {
   try {
-    let resp = await Vue.connector.http.external.get(`./statics/icons/favicon-16x16.png?_=${(new Date()).getTime()}`)
+    let resp = await Vue.connector.http.external.get(`./favicon-16x16.png?_=${(new Date()).getTime()}`)
     if (resp.status === 200 && state.offline) {
       commit('setOfflineFlag', false)
     }

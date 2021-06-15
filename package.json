@@ -1,9 +1,8 @@
 {
   "name": "qtelemetry",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "Component for show telemetry",
   "productName": "QTelemetry",
-  "cordovaId": "org.cordova.quasar.app",
   "capacitorId": "",
   "author": "Sergey Buntsevich <scarry92@yandex.ru>",
   "private": true,
@@ -16,33 +15,43 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
-    "flespi-io-js": "git+https://github.com/flespi-software/flespi-io-js.git",
-    "lodash": "^4.17.15",
-    "moment": "^2.24.0",
-    "quasar": "^1.5.1",
+    "core-js": "^3.14.0",
+    "flespi-io-js": "github:flespi-software/flespi-io-js",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.0",
+    "quasar": "^1.15.20",
     "vue-virtual-scroll-list": "^1.4.2"
   },
   "devDependencies": {
-    "@quasar/app": "^1.3.1",
-    "@vue/eslint-config-standard": "^4.0.0",
+    "@quasar/app": "^2.2.10",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-commonjs": "^19.0.0",
+    "@rollup/plugin-eslint": "^8.0.1",
+    "@rollup/plugin-node-resolve": "^13.0.0",
     "babel-eslint": "^10.0.1",
-    "eslint": "^5.10.0",
-    "eslint-loader": "^2.1.1",
-    "eslint-plugin-vue": "^5.0.0",
+    "eslint": "^7.21.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-vue": "^7.7.0",
+    "eslint-webpack-plugin": "^2.4.0",
     "git-directory-deploy": "^1.5.1",
-    "rollup": "^1.27.5",
-    "rollup-plugin-babel": "^4.3.3",
-    "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-uglify": "^6.0.3",
+    "rollup": "^2.51.2",
+    "rollup-plugin-terser": "^7.0.2",
     "shelljs": "^0.8.2"
   },
   "engines": {
-    "node": ">= 8.9.0",
-    "npm": ">= 5.6.0",
-    "yarn": ">= 1.6.0"
+    "node": ">= 10.18.1",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
   },
   "browserslist": [
-    "last 1 version, not dead, ie >= 11"
+    "last 10 Chrome versions",
+    "last 10 Firefox versions",
+    "last 4 Edge versions",
+    "last 7 Safari versions",
+    "last 8 Android versions",
+    "last 8 ChromeAndroid versions",
+    "last 8 FirefoxAndroid versions",
+    "last 10 iOS versions",
+    "last 5 Opera versions"
   ]
 }
