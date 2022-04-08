@@ -18,7 +18,7 @@
     "core-js": "^3.14.0",
     "flespi-io-js": "github:flespi-software/flespi-io-js",
     "lodash": "^4.17.21",
-    "moment": "^2.29.0",
+    "moment": "^2.29.2",
     "quasar": "^1.15.20",
     "vue-virtual-scroll-list": "^1.4.2"
   },
