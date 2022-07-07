@@ -1,11 +1,12 @@
 import ConnectionPlugin from 'flespi-io-js/dist/vue-plugin'
 import { version } from '../../package.json'
 
-let connectionConfig = { socketConfig: { clientId: `telemetry-viewer-${version}-${Math.random().toString(16).substr(2, 8)}`, mqttSettings: { protocolVersion: 5 } } }
+const clientId = `telemetry-viewer-${version}-${Math.random().toString(16).substr(2, 8)}`
+let connectionConfig = { httpConfig: { flespiApp: clientId }, socketConfig: { clientId, mqttSettings: { protocolVersion: 5 } } }
 
 if (IS_LOCAL_BUILD) {
   connectionConfig = {
-    httpConfig: { server: 'https://localhost', port: 9005 },
+    httpConfig: { server: 'https://localhost', port: 9005, flespiApp: clientId },
     socketConfig: { server: `ws://localhost:9016`, clientId: `telemetry-viewer-${version}-${Math.random().toString(16).substr(2, 8)}`, mqttSettings: { protocolVersion: 5 } }
   }
 }
